@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth
+  template:
+    metadata:
+      labels:
+        app: auth
+    spec:
+      containers:
+        - name: auth
+          image: sundeepcharan/ticket-auth
+
+---
+# ClusterIP service
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-srv-clusterip
+spec:
+  type: ClusterIP
+  selector:
+    app: auth
+  ports:
+    - port: 9998
+      targetPort: 9998
+      name: auth-port
+      protocol: TCP
