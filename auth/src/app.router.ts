@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { check, validationResult, ValidationError } from "express-validator";
+import RequestValidationError from "./utils/RequestValidationError";
 
 interface User {
   name: string;
@@ -22,8 +23,8 @@ router.get<{}, { statusCode: number; user: User }>(
       statusCode: 200,
       user: {
         name: "Sundeep Charan Ramkumar",
-        email: "webdevdesign@sundeepcharan.com",
-      },
+        email: "webdevdesign@sundeepcharan.com"
+      }
     });
   }
 );
@@ -42,12 +43,11 @@ router.post<
   check("password", "Password is required").not().isEmpty(),
   check("email", "Invalid Email").isEmail(),
   check("password", "Password should be minimum 8 characters").trim().isLength({
-    min: 8,
+    min: 8
   }),
   (req, res) => {
     const errors = validationResult(req);
-    if (!errors.isEmpty())
-      return res.status(400).json({ statusCode: 400, message: errors.array() });
+    if (!errors.isEmpty()) throw new RequestValidationError(errors.array());
     const { email, name, password } = req.body;
     res.status(201).send({ statusCode: 201, user: { name, email } });
   }
@@ -60,10 +60,18 @@ router.post<
   any,
   { statusCode: number; user: User },
   { email: string; password: string }
->("/signin", (req, res) => {
-  const { email } = req.body;
-  res.status(202).send({ statusCode: 201, user: { name: "Sundeep", email } });
-});
+>(
+  "/signin",
+  check("email", "Email is required").not().isEmpty(),
+  check("password", "Password is required").not().isEmpty(),
+  check("email", "Invalid Email").isEmail(),
+  (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) throw new RequestValidationError(errors.array());
+    const { email } = req.body;
+    res.status(202).send({ statusCode: 201, user: { name: "Sundeep", email } });
+  }
+);
 
 // @route - DELETE /api/users/signout
 // @desc - Logout user
