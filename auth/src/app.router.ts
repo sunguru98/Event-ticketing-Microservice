@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { check, validationResult, ValidationError } from "express-validator";
 
 interface User {
   name: string;
@@ -30,9 +31,23 @@ router.get<{}, { statusCode: number; user: User }>(
 // @route - POST /api/users/signup
 // @desc - Register new user
 // @auth - Public
-router.post<any, { statusCode: number; user: User }, UserReq>(
+router.post<
+  any,
+  | { statusCode: number; user: User }
+  | { statusCode: number; message: ValidationError[] },
+  UserReq
+>(
   "/signup",
+  check("email", "Email is required").not().isEmpty(),
+  check("password", "Password is required").not().isEmpty(),
+  check("email", "Invalid Email").isEmail(),
+  check("password", "Password should be minimum 8 characters").trim().isLength({
+    min: 8,
+  }),
   (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty())
+      return res.status(400).json({ statusCode: 400, message: errors.array() });
     const { email, name, password } = req.body;
     res.status(201).send({ statusCode: 201, user: { name, email } });
   }
