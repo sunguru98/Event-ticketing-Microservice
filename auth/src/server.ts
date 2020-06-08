@@ -14,4 +14,7 @@ app.all("*", async req => {
 
 // Error handler
 app.use(errorHandler);
-app.listen(PORT, () => console.log(`Auth service running on PORT: ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Auth service running on PORT: ${PORT}`);
+  require("./utils/db");
+});
