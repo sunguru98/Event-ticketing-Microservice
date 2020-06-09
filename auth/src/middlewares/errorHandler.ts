@@ -7,7 +7,7 @@ export default (
   res: Response,
   next: NextFunction
 ) => {
-  console.error(`Error: ${err.message}`);
+  console.error(err.message);
   if (err instanceof CustomError)
     return res.status(err.statusCode).send({ errors: err.serializeErrors() });
   return res.status(400).send({
