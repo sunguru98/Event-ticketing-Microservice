@@ -25,7 +25,7 @@ interface IUserBase extends IUserSchema {
 }
 
 // User document
-export interface IUser extends IUserSchema {
+export interface IUser extends IUserBase {
   createdAt: Date;
   updatedAt: Date;
 }
