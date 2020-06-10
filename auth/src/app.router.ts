@@ -1,14 +1,13 @@
 import { Router } from "express";
-import { check, validationResult, ValidationError } from "express-validator";
+import { check, validationResult } from "express-validator";
+import { sign } from "jsonwebtoken";
 import RequestValidationError from "./utils/RequestValidationError";
-import User, { IUser, UserReqSignUp, UserReq } from "./models/User";
+import User, { UserReqSignUp, UserReq } from "./models/User";
 import BadRequestError from "./utils/BadRequestError";
 
 interface UserRes {
   email: string;
   name: string;
-  accessToken: string;
-  expiresIn: string;
 }
 
 interface UserErrorRes {
@@ -21,7 +20,7 @@ const router = Router();
 // @desc - Get current user data
 // @auth - Private
 router.get<{}, UserRes | UserErrorRes>("/currentuser", (req, res) => {
-  res.json({ name: "", email: "", accessToken: "", expiresIn: "" });
+  res.json({ name: "", email: "" });
 });
 
 // @route - POST /api/users/signup
@@ -44,7 +43,9 @@ router.post<any, UserRes | UserErrorRes, UserReqSignUp>(
     if (user) throw new BadRequestError("Email already exists");
     user = User.build({ email, name, password });
     await user.save();
-    res.status(201).send({ name, email, accessToken: "", expiresIn: "" });
+    const accessToken = sign({ id: user.id, email: user.email }, "eventTicket");
+    req.session!.accessToken = accessToken;
+    res.status(201).send({ name, email });
   }
 );
 
@@ -62,9 +63,7 @@ router.post<any, UserRes | UserErrorRes, UserReq>(
     const { email, password } = req.body;
     res.status(202).send({
       name: "Sundeep",
-      email,
-      accessToken: "",
-      expiresIn: ""
+      email
     });
   }
 );
