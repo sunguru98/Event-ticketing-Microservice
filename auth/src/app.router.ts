@@ -4,10 +4,14 @@ import { sign } from "jsonwebtoken";
 import RequestValidationError from "./utils/RequestValidationError";
 import User, { UserReqSignUp, UserReq } from "./models/User";
 import BadRequestError from "./utils/BadRequestError";
+import AuthorizationError from "./utils/AuthorizationError";
 
 interface UserRes {
+  id: string;
   email: string;
   name: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 interface UserErrorRes {
@@ -20,7 +24,7 @@ const router = Router();
 // @desc - Get current user data
 // @auth - Private
 router.get<{}, UserRes | UserErrorRes>("/currentuser", (req, res) => {
-  res.json({ name: "", email: "" });
+  res.json();
 });
 
 // @route - POST /api/users/signup
@@ -43,9 +47,12 @@ router.post<any, UserRes | UserErrorRes, UserReqSignUp>(
     if (user) throw new BadRequestError("Email already exists");
     user = User.build({ email, name, password });
     await user.save();
-    const accessToken = sign({ id: user.id, email: user.email }, "eventTicket");
+    const accessToken = sign(
+      { id: user.id, email: user.email },
+      process.env.JWT_KEY!
+    );
     req.session!.accessToken = accessToken;
-    res.status(201).send({ name, email });
+    res.status(201).json(user);
   }
 );
 
@@ -57,14 +64,18 @@ router.post<any, UserRes | UserErrorRes, UserReq>(
   check("email", "Email is required").not().isEmpty(),
   check("password", "Password is required").not().isEmpty(),
   check("email", "Invalid Email").isEmail(),
-  (req, res) => {
+  async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) throw new RequestValidationError(errors.array());
     const { email, password } = req.body;
-    res.status(202).send({
-      name: "Sundeep",
-      email
-    });
+    const user = await User.findUserByEmailAndPassword(email, password);
+    if (!user) throw new AuthorizationError("Invalid Credentials");
+    const accessToken = sign(
+      { id: user.id, email: user.email },
+      process.env.JWT_KEY!
+    );
+    req.session!.accessToken = accessToken;
+    res.status(202).json(user);
   }
 );
 

@@ -1,5 +1,5 @@
 import { Schema, model, Document, Model } from "mongoose";
-import { hash } from "bcryptjs";
+import { hash, compare } from "bcryptjs";
 
 // User Schema
 interface IUserSchema extends Document {
@@ -26,17 +26,21 @@ interface IUserBase extends IUserSchema {
 
 // User document
 export interface IUser extends IUserBase {
+  id: string;
   createdAt: Date;
   updatedAt: Date;
 }
 
 // User Statics
 export interface IUserModel extends Model<IUser> {
-  hi: string;
   build: (user: UserReqSignUp) => IUser;
+  findUserByEmailAndPassword: (
+    email: string,
+    password: string
+  ) => Promise<IUser | null>;
 }
 
-const userSchema = new Schema<IUserSchema>(
+const userSchema = new Schema(
   {
     name: {
       type: String,
@@ -54,14 +58,30 @@ const userSchema = new Schema<IUserSchema>(
       required: true
     }
   },
-  { timestamps: true }
+  { timestamps: true, versionKey: false }
 );
 
 userSchema.methods.toJSON = function () {
-  const user = this;
+  const user = this.toObject();
+  user.id = user._id;
+  delete user._id;
   delete user.password;
-  delete user.__v;
   return user;
+};
+
+userSchema.statics.findUserByEmailAndPassword = async function (
+  email: string,
+  password: string
+) {
+  try {
+    const user = await User.findOne({ email });
+    if (!user) return null;
+    const isMatched = await compare(password, user.password);
+    if (!isMatched) return null;
+    return user;
+  } catch (err) {
+    throw err;
+  }
 };
 
 userSchema.statics.build = (user: { email: string; password: string }) =>
