@@ -3,6 +3,7 @@ import { sign } from "jsonwebtoken";
 import User from "./models/User";
 import BadRequestError from "./utils/errors/BadRequestError";
 import AuthorizationError from "./utils/errors/AuthorizationError";
+import { expiresIn } from "./utils/expiresIn";
 
 interface UserRes {
   id: string;
@@ -36,17 +37,18 @@ const signIn = async (
   if (!user) throw new AuthorizationError("Invalid Credentials");
   const accessToken = sign(
     { id: user.id, email: user.email },
-    process.env.JWT_KEY!
+    process.env.JWT_KEY!,
+    { expiresIn: expiresIn("15m") }
   );
   req.session!.accessToken = accessToken;
   res.status(202).json(user);
 };
 
 const getCurrentUser = (
-  _: Request<any, UserRes | UserErrorRes, null>,
-  res: Response<UserRes | UserErrorRes>
+  req: Request<any, { email: string; id: string }, null>,
+  res: Response<{ email: string; id: string }>
 ) => {
-  res.json();
+  res.send(req.user);
 };
 
 const register = async (
@@ -60,16 +62,18 @@ const register = async (
   await user.save();
   const accessToken = sign(
     { id: user.id, email: user.email },
-    process.env.JWT_KEY!
+    process.env.JWT_KEY!,
+    { expiresIn: expiresIn("15m") }
   );
   req.session!.accessToken = accessToken;
   res.status(201).json(user);
 };
 
 const signOut = (
-  _: Request<any, string | UserErrorRes, null>,
+  req: Request<any, string | UserErrorRes, null>,
   res: Response<string | UserErrorRes>
 ) => {
+  req.session = null;
   res.status(202).send("Logged out successfully");
 };
 
