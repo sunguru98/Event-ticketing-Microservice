@@ -8,17 +8,6 @@ interface IUserSchema extends Document {
   name: string;
 }
 
-// User request object - Login
-export interface UserReq {
-  email: string;
-  password: string;
-}
-
-// User request object - Signup
-export interface UserReqSignUp extends UserReq {
-  name: string;
-}
-
 // User Methods
 interface IUserBase extends IUserSchema {
   toJSON: () => IUser;
@@ -33,7 +22,7 @@ export interface IUser extends IUserBase {
 
 // User Statics
 export interface IUserModel extends Model<IUser> {
-  build: (user: UserReqSignUp) => IUser;
+  build: (user: { name: string; email: string; password: string }) => IUser;
   findUserByEmailAndPassword: (
     email: string,
     password: string

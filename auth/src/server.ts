@@ -1,7 +1,7 @@
 import express from "express";
 import "express-async-errors";
 import cookieSession from "cookie-session";
-import appRouter from "./app.router";
+import appRouter from "./auth.router";
 import errorHandler from "./middlewares/errorHandler";
 import NotFoundError from "./utils/errors/NotFoundError";
 
