@@ -14,3 +14,7 @@ spec:
             backend:
               servicePort: 9998
               serviceName: auth-srv-clusterip
+          - path: /?(.*)
+            backend:
+              servicePort: 3000
+              serviceName: client-srv-clusterip
