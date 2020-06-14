@@ -1,10 +1,11 @@
 import { Router } from "express";
 import { check, validationResult } from "express-validator";
 import { sign } from "jsonwebtoken";
-import RequestValidationError from "./utils/RequestValidationError";
+import RequestValidationError from "./utils/errors/RequestValidationError";
 import User, { UserReqSignUp, UserReq } from "./models/User";
-import BadRequestError from "./utils/BadRequestError";
-import AuthorizationError from "./utils/AuthorizationError";
+import BadRequestError from "./utils/errors/BadRequestError";
+import AuthorizationError from "./utils/errors/AuthorizationError";
+import validateRequest from "./middlewares/validateRequest";
 
 interface UserRes {
   id: string;
@@ -39,9 +40,8 @@ router.post<any, UserRes | UserErrorRes, UserReqSignUp>(
   check("password", "Password should be minimum 8 characters").trim().isLength({
     min: 8
   }),
+  validateRequest,
   async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) throw new RequestValidationError(errors.array());
     const { email, name, password } = req.body;
     let user = await User.findOne({ email });
     if (user) throw new BadRequestError("Email already exists");
@@ -64,9 +64,8 @@ router.post<any, UserRes | UserErrorRes, UserReq>(
   check("email", "Email is required").not().isEmpty(),
   check("password", "Password is required").not().isEmpty(),
   check("email", "Invalid Email").isEmail(),
+  validateRequest,
   async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) throw new RequestValidationError(errors.array());
     const { email, password } = req.body;
     const user = await User.findUserByEmailAndPassword(email, password);
     if (!user) throw new AuthorizationError("Invalid Credentials");
