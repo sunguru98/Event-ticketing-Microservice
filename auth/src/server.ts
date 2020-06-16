@@ -12,6 +12,7 @@ app.set("trust proxy", true);
 app.use(express.json());
 app.use(
   cookieSession({
+    name: "event-ticket-token",
     sameSite: true,
     secure: true,
     signed: false

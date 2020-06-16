@@ -57,7 +57,7 @@ const register = async (
 ) => {
   const { email, password, name } = req.body;
   let user = await User.findOne({ email });
-  if (user) throw new BadRequestError("Email already exists");
+  if (user) throw new BadRequestError("Email already exists", "email");
   user = User.build({ email, name, password });
   await user.save();
   const accessToken = sign(
