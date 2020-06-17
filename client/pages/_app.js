@@ -1,7 +1,7 @@
 import "bootstrap/dist/css/bootstrap.css";
 
-export default ({ Component, props }) => (
+export default ({ Component, pageProps }) => (
   <div className="container">
-    <Component {...props} />
+    <Component {...pageProps} />
   </div>
 );
