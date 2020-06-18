@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { check } from "express-validator";
-import validateRequest from "./middlewares/validateRequest";
-import authenticate from "./middlewares/authenticate";
+import { validateRequest, authenticate } from "@scrtickets/common";
 import { signIn, register, signOut, getCurrentUser } from "./auth.controller";
 
 const router = Router();

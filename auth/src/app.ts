@@ -2,8 +2,7 @@ import express from "express";
 import "express-async-errors";
 import cookieSession from "cookie-session";
 import appRouter from "./auth.router";
-import errorHandler from "./middlewares/errorHandler";
-import NotFoundError from "./utils/errors/NotFoundError";
+import { errorHandler, NotFoundError } from "@scrtickets/common";
 
 const app = express();
 app.set("trust proxy", true);

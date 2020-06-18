@@ -1,9 +1,11 @@
 import { Response, Request } from "express";
 import { sign } from "jsonwebtoken";
 import User from "./models/User";
-import BadRequestError from "./utils/errors/BadRequestError";
-import AuthorizationError from "./utils/errors/AuthorizationError";
-import { expiresIn } from "./utils/expiresIn";
+import {
+  BadRequestError,
+  AuthorizationError,
+  expiresIn
+} from "@scrtickets/common";
 
 interface UserRes {
   id: string;
