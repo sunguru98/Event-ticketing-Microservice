@@ -46,6 +46,6 @@ router.post(
 // @route - DELETE /api/users/signout
 // @desc - Logout user
 // @auth - Private
-router.delete("/signout", authenticate, signOut);
+router.delete("/signout", signOut);
 
 export default router;

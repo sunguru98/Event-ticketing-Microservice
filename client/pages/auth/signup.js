@@ -16,7 +16,8 @@ export default () => {
   });
 
   const handleChange = e => {
-    setErrors({ ...errors, [e.target.name]: undefined });
+    if (errors[e.target.name])
+      setErrors({ ...errors, [e.target.name]: undefined });
     setFormState({ ...formState, [e.target.name]: e.target.value });
   };
 
