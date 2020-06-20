@@ -16,6 +16,8 @@ spec:
         - name: tickets
           image: sundeepcharan/ticket-tickets
           env:
+            - name: MONGO_DB_URI
+              value: mongodb://tickets-mongo-srv:27017/tickets
             - name: JWT_KEY
               valueFrom:
                 secretKeyRef:
@@ -33,7 +35,7 @@ spec:
   selector:
     app: tickets
   ports:
-    - port: 9998
-      targetPort: 9998
+    - port: 9997
+      targetPort: 9997
       name: tickets-port
       protocol: TCP

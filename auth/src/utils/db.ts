@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 mongoose
-  .connect("mongodb://auth-mongo-srv:27017/auth", {
+  .connect(process.env.MONGO_DB_URI!, {
     useCreateIndex: true,
     useNewUrlParser: true,
     useUnifiedTopology: true,

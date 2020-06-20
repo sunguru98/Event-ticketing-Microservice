@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 mongoose
-  .connect("mongodb://tickets-mongo-srv:27017/tickets", {
+  .connect(process.env.MONGO_DB_URI!, {
     useCreateIndex: true,
     useNewUrlParser: true,
     useUnifiedTopology: true,
