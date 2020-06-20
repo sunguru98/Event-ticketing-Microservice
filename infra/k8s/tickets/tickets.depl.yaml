@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tickets-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tickets
+  template:
+    metadata:
+      labels:
+        app: tickets
+    spec:
+      containers:
+        - name: tickets
+          image: sundeepcharan/ticket-tickets
+          env:
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_KEY
+
+---
+# ClusterIP service
+apiVersion: v1
+kind: Service
+metadata:
+  name: tickets-srv-clusterip
+spec:
+  type: ClusterIP
+  selector:
+    app: tickets
+  ports:
+    - port: 9998
+      targetPort: 9998
+      name: tickets-port
+      protocol: TCP

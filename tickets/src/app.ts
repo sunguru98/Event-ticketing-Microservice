@@ -1,7 +1,6 @@
 import express from "express";
 import "express-async-errors";
 import cookieSession from "cookie-session";
-import authRouter from "./auth.router";
 import { errorHandler, NotFoundError } from "@scrtickets/common";
 
 const app = express();
@@ -15,7 +14,10 @@ app.use(
   })
 );
 
-app.use("/api/users", authRouter);
+app.get("/", (req, res) => {
+  res.json({ message: "Welcome to tickets service" });
+});
+
 app.all("*", async req => {
   throw new NotFoundError(`${req.url} not found`);
 });
