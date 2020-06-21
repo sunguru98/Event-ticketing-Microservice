@@ -3,6 +3,8 @@ import "express-async-errors";
 import cookieSession from "cookie-session";
 import { errorHandler, NotFoundError } from "@scrtickets/common";
 
+import ticketsRouter from "./tickets.router";
+
 const app = express();
 app.set("trust proxy", true);
 app.use(express.json());
@@ -14,9 +16,7 @@ app.use(
   })
 );
 
-app.get("/", (req, res) => {
-  res.json({ message: "Welcome to tickets service" });
-});
+app.use("/api/tickets", ticketsRouter);
 
 app.all("*", async req => {
   throw new NotFoundError(`${req.url} not found`);

@@ -1,7 +1,6 @@
 import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
-import request from "supertest";
-import app from "../app";
+import { sign } from "jsonwebtoken";
 
 declare global {
   namespace NodeJS {
@@ -17,16 +16,20 @@ const setEnvironmentVariables = () => {
 };
 
 const registerUserTest = async () => {
-  const user = {
-    email: "user@example.com",
-    name: "Test User",
-    password: "testUser1234"
+  // Fake user
+  const payload = {
+    name: "Test user",
+    email: "name@example.com",
+    password: "NameTest123"
   };
-  const response = await request(app)
-    .post("/api/users/signup")
-    .send(user)
-    .expect(201);
-  return response.get("Set-Cookie");
+  // Generating JWT.
+  const accessToken = sign(payload, process.env.JWT_KEY!);
+  // Build session object
+  const session = JSON.stringify({ accessToken });
+  // Convert to base64
+  const base64EncodedSession = Buffer.from(session).toString("base64");
+  // cookie format
+  return [`express:sess=${base64EncodedSession}`];
 };
 
 let mongoServer: MongoMemoryServer;
