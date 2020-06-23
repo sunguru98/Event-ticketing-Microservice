@@ -24,7 +24,7 @@ export interface ITicket extends ITicketBase {
 
 // Ticket Statics
 export interface ITicketModel extends Model<ITicket> {
-  build: (ticket: { title: string; price: string }) => ITicket;
+  build: (ticket: { title: string; price: number }) => ITicket;
 }
 
 const ticketSchema = new Schema(

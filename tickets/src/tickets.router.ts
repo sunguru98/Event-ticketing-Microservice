@@ -5,8 +5,9 @@ import {
   createTicket,
   updateTicket,
   getTickets,
-  getTicket
+  getTicketById
 } from "./tickets.controller";
+
 const router = Router();
 
 // @route - POST /api/tickets
@@ -24,11 +25,11 @@ router.post(
   createTicket
 );
 
-// @route - PUT /api/tickets
+// @route - PUT /api/tickets/:id
 // @desc - Update an event ticket
 // @auth - Private
 router.put(
-  "/",
+  "/:id",
   authenticate,
   [
     check("price", "Price is required").not().isEmpty(),
@@ -39,14 +40,14 @@ router.put(
   updateTicket
 );
 
-// @route - GET /api/tickets
-// @desc - GET all event tickets
-// @auth - Public
-router.get("/", getTickets);
-
 // @route - GET /api/tickets/:id
 // @desc - Get a certain event ticket
+// @auth - Public
+router.get("/:id", authenticate, getTicketById);
+
+// @route - GET /api/tickets
+// @desc - GET all event tickets
 // @auth - Private
-router.get("/:id", getTicket);
+router.get("/", authenticate, getTickets);
 
 export default router;
