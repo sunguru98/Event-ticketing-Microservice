@@ -6,3 +6,5 @@ client/node_modules
 client/package-lock.json
 client/.next
 secrets.txt
+nats-test/node_modules
+nats-test/package-lock.json
