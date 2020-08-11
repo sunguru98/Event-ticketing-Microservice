@@ -18,6 +18,10 @@ spec:
             backend:
               servicePort: 9997
               serviceName: tickets-srv-clusterip
+          - path: /api/orders/?(.*)
+            backend:
+              servicePort: 9996
+              serviceName: orders-srv-clusterip
           - path: /?(.*)
             backend:
               servicePort: 3000

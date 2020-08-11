@@ -2,6 +2,8 @@ auth/node_modules
 auth/package-lock.json
 tickets/node_modules
 tickets/package-lock.json
+orders/node_modules
+orders/package-lock.json
 client/node_modules
 client/package-lock.json
 client/.next

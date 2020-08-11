@@ -1,7 +1,7 @@
 import app from "./app";
 import { natsWrapper } from "./utils/natsWrapper";
 
-const PORT = 9997;
+const PORT = 9996;
 
 if (!process.env.JWT_KEY) throw new Error("JWT_KEY is not defined");
 if (!process.env.MONGO_DB_URI) throw new Error("MONGO_DB_URI is not defined");
@@ -13,7 +13,7 @@ if (!process.env.NATS_CLIENT_ID)
   throw new Error("NATS_CLIENT_ID is not defined");
 
 app.listen(PORT, () => {
-  console.log(`Tickets service running on PORT: ${PORT}`);
+  console.log(`Orders service running on PORT: ${PORT}`);
   require("./utils/db");
   natsWrapper.connect(
     process.env.NATS_CLUSTER_ID!,
