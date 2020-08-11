@@ -1,6 +1,9 @@
 import { Request, Response } from "express";
 import { NotFoundError, BadRequestError } from "@scrtickets/common";
 import Ticket, { ITicket } from "./models/Ticket";
+import { TicketCreatePublisher } from "./events/publisher/TicketCreatePublisher";
+import { natsWrapper } from "./utils/natsWrapper";
+import { TicketUpdatePublisher } from "./events/publisher/TicketUpdatePublisher";
 
 interface TicketRes {
   id: string;
@@ -28,6 +31,12 @@ export const createTicket = async (
   const ticket = Ticket.build({ title, price });
   ticket.userId = req.user!.id;
   await ticket.save();
+  new TicketCreatePublisher(natsWrapper.client).publish({
+    title: ticket.title,
+    price: ticket.price,
+    userId: ticket.userId,
+    id: ticket.id
+  });
   res.status(201).json(ticket);
 };
 
@@ -44,7 +53,16 @@ export const updateTicket = async (
       { new: true }
     );
     if (!ticket) throw new Error("Ticket not found");
-    res.status(201).json(ticket);
+    const response = await new TicketUpdatePublisher(
+      natsWrapper.client
+    ).publish({
+      title: ticket.title,
+      price: ticket.price,
+      userId: ticket.userId,
+      id: ticket.id
+    });
+    console.log(response);
+    res.status(202).json(ticket);
   } catch (err) {
     if (err.name === "CastError")
       throw new BadRequestError("Invalid ticket ID");

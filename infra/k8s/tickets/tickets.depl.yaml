@@ -16,8 +16,16 @@ spec:
         - name: tickets
           image: sundeepcharan/ticket-tickets
           env:
+            - name: NATS_CLIENT_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
             - name: MONGO_DB_URI
               value: mongodb://tickets-mongo-srv:27017/tickets
+            - name: NATS_CONNECTION_URL
+              value: http://nats-srv:4222
+            - name: NATS_CLUSTER_ID
+              value: eventticket
             - name: JWT_KEY
               valueFrom:
                 secretKeyRef:
